@@ -11,10 +11,9 @@ import (
 )
 
 const (
-	alice       = "cosmos1jmjfq0tplp9tmx4v9uemw72y4d2wa5nr3xn9d3"
-	bob         = "cosmos1xyxs3skf3f4jfqeuv89yyaqvjc6lffavxqhc8g"
-	carol       = "cosmos1e0w5t53nrq7p66fye6c8p0ynyhf6y24l4yuxd7"
-	bad_address = "THIS_IS_A_BAD_ADDRESS"
+	alice      = "cosmos1jmjfq0tplp9tmx4v9uemw72y4d2wa5nr3xn9d3"
+	bob        = "cosmos1xyxs3skf3f4jfqeuv89yyaqvjc6lffavxqhc8g"
+	badAddress = "THIS_IS_A_BAD_ADDRESS"
 )
 
 func GetStoredGame1() types.StoredGame {
@@ -37,7 +36,7 @@ func TestCanGetAddressBlack(t *testing.T) {
 
 func TestGetAddressWrongBlack(t *testing.T) {
 	storedGame := GetStoredGame1()
-	storedGame.Black = bad_address
+	storedGame.Black = badAddress
 	actualAddress, actualAddrErr := storedGame.GetBlackAddress()
 	require.Nil(t, actualAddress)
 	require.EqualError(
@@ -45,7 +44,7 @@ func TestGetAddressWrongBlack(t *testing.T) {
 		actualAddrErr,
 		fmt.Sprintf(
 			"black address is invalid: %s: decoding bech32 failed: invalid separator index -1",
-			bad_address),
+			badAddress),
 	)
 	require.EqualError(t, storedGame.Validate(), actualAddrErr.Error())
 }
@@ -60,7 +59,7 @@ func TestCanGetAddressRed(t *testing.T) {
 
 func TestGetAddressWrongRed(t *testing.T) {
 	storedGame := GetStoredGame1()
-	storedGame.Red = bad_address
+	storedGame.Red = badAddress
 	actualAddress, actualAddrErr := storedGame.GetRedAddress()
 	require.Nil(t, actualAddress)
 	require.EqualError(
@@ -68,7 +67,7 @@ func TestGetAddressWrongRed(t *testing.T) {
 		actualAddrErr,
 		fmt.Sprintf(
 			"red address is invalid: %s: decoding bech32 failed: invalid separator index -1",
-			bad_address),
+			badAddress),
 	)
 	require.EqualError(t, storedGame.Validate(), actualAddrErr.Error())
 }
