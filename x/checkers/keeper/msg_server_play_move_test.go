@@ -107,6 +107,32 @@ func TestPlayMoveSavedGame(t *testing.T) {
 	}, storedGame)
 }
 
+func TestPlayMoveEmitted(t *testing.T) {
+	msgServer, _, context := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	require.NotNil(t, ctx)
+	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
+	require.Len(t, events, 2)
+	require.EqualValues(t, sdk.StringEvent{
+		Type: types.MovePlayedEventType,
+		Attributes: []sdk.Attribute{
+			{Key: types.MovePlayedEventCreator, Value: bob},
+			{Key: types.MovePlayedEventGameIndex, Value: "1"},
+			{Key: types.MovePlayedEventCapturedX, Value: "-1"},
+			{Key: types.MovePlayedEventCapturedY, Value: "-1"},
+			{Key: types.MovePlayedEventWinner, Value: rules.PieceStrings[rules.NO_PLAYER]},
+		},
+	}, events[0])
+}
+
 func TestPlayMoveNotPlayer(t *testing.T) {
 	msgServer, _, context := setupMsgServerWithOneGameForPlayMove(t)
 	playMoveResponse, err := msgServer.PlayMove(context, &types.MsgPlayMove{
@@ -233,6 +259,37 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		Black: bob,
 		Red:   carol,
 	}, storedGame)
+}
+
+func TestPlayMove2Emitted(t *testing.T) {
+	msgServer, _, context := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+	require.NotNil(t, ctx)
+	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
+	require.Len(t, events, 2)
+	require.EqualValues(t, []sdk.Attribute{
+		{Key: types.MovePlayedEventCreator, Value: carol},
+		{Key: types.GameCreatedEventGameIndex, Value: "1"},
+		{Key: types.MovePlayedEventCapturedX, Value: "-1"},
+		{Key: types.MovePlayedEventCapturedY, Value: "-1"},
+		{Key: types.MovePlayedEventWinner, Value: rules.PieceStrings[rules.NO_PLAYER]},
+	}, events[0].Attributes[5:])
 }
 
 func TestPlayMove3(t *testing.T) {
