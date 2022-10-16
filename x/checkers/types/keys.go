@@ -32,3 +32,12 @@ const (
 	GameCreatedEventBlack     = "black"            // Is it relevant to me?
 	GameCreatedEventRed       = "red"              // Is it relevant to me?
 )
+
+const (
+	MovePlayedEventType      = "move-played"
+	MovePlayedEventCreator   = "creator"
+	MovePlayedEventGameIndex = "game-index"
+	MovePlayedEventCapturedX = "captured-x"
+	MovePlayedEventCapturedY = "captured-y"
+	MovePlayedEventWinner    = "winner"
+)
