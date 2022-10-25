@@ -54,7 +54,13 @@ func TestRejectGameByBlackNoMoveRemovedGame(t *testing.T) {
 	})
 	systemInfo, found := k.GetSystemInfo(ctx)
 	require.True(t, found)
-	require.EqualValues(t, types.SystemInfo{NextId: 2}, systemInfo)
+	require.EqualValues(
+		t,
+		types.SystemInfo{
+			NextId:        2,
+			FifoHeadIndex: types.NoFifoIndex,
+			FifoTailIndex: types.NoFifoIndex,
+		}, systemInfo)
 	_, found = k.GetStoredGame(ctx, "1")
 	require.False(t, found)
 }
@@ -97,7 +103,13 @@ func TestRejectGameByRedNoMoveRemovedGame(t *testing.T) {
 	})
 	systemInfo, found := k.GetSystemInfo(ctx)
 	require.True(t, found)
-	require.EqualValues(t, types.SystemInfo{NextId: 2}, systemInfo)
+	require.EqualValues(
+		t,
+		types.SystemInfo{
+			NextId:        2,
+			FifoHeadIndex: types.NoFifoIndex,
+			FifoTailIndex: types.NoFifoIndex,
+		}, systemInfo)
 	_, found = k.GetStoredGame(ctx, "1")
 	require.False(t, found)
 }
@@ -156,7 +168,13 @@ func TestRejectGameByRedOneMoveRemovedGame(t *testing.T) {
 	})
 	systemInfo, found := k.GetSystemInfo(ctx)
 	require.True(t, found)
-	require.EqualValues(t, types.SystemInfo{NextId: 2}, systemInfo)
+	require.EqualValues(
+		t,
+		types.SystemInfo{
+			NextId:        2,
+			FifoHeadIndex: types.NoFifoIndex,
+			FifoTailIndex: types.NoFifoIndex,
+		}, systemInfo)
 	_, found = k.GetStoredGame(ctx, "1")
 	require.False(t, found)
 }
