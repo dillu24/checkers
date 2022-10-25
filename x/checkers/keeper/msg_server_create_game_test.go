@@ -50,17 +50,21 @@ func TestCreate1GameHasSaved(t *testing.T) {
 	systemInfo, found := k.GetSystemInfo(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
-		NextId: 2,
+		NextId:        2,
+		FifoHeadIndex: "1",
+		FifoTailIndex: "1",
 	}, systemInfo)
 	game, found := k.GetStoredGame(ctx, "1")
 	require.True(t, found)
 	require.EqualValues(t, types.StoredGame{
-		Index:     "1",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     bob,
-		Red:       carol,
-		MoveCount: 0,
+		Index:       "1",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		MoveCount:   0,
+		BeforeIndex: types.NoFifoIndex,
+		AfterIndex:  types.NoFifoIndex,
 	}, game)
 }
 
@@ -75,12 +79,14 @@ func TestCreate1GameGetAll(t *testing.T) {
 	games := k.GetAllStoredGame(ctx)
 	require.Len(t, games, 1)
 	require.Equal(t, types.StoredGame{
-		Index:     "1",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     bob,
-		Red:       carol,
-		MoveCount: 0,
+		Index:       "1",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		MoveCount:   0,
+		BeforeIndex: types.NoFifoIndex,
+		AfterIndex:  types.NoFifoIndex,
 	}, games[0])
 }
 
@@ -175,16 +181,18 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 	})
 	systemInfo, found := k.GetSystemInfo(ctx)
 	require.True(t, found)
-	require.EqualValues(t, types.SystemInfo{NextId: 2}, systemInfo)
+	require.EqualValues(t, types.SystemInfo{NextId: 2, FifoHeadIndex: "1", FifoTailIndex: "1"}, systemInfo)
 	storedGame, found := k.GetStoredGame(ctx, "1")
 	require.True(t, found)
 	require.EqualValues(t, types.StoredGame{
-		Index:     "1",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     bob,
-		Red:       carol,
-		MoveCount: 0,
+		Index:       "1",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		MoveCount:   0,
+		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: types.NoFifoIndex,
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -194,16 +202,18 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 	})
 	systemInfo, found = k.GetSystemInfo(ctx)
 	require.True(t, found)
-	require.EqualValues(t, types.SystemInfo{NextId: 3}, systemInfo)
+	require.EqualValues(t, types.SystemInfo{NextId: 3, FifoHeadIndex: "1", FifoTailIndex: "2"}, systemInfo)
 	storedGame, found = k.GetStoredGame(ctx, "2")
 	require.True(t, found)
 	require.EqualValues(t, types.StoredGame{
-		Index:     "2",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     alice,
-		Red:       bob,
-		MoveCount: 0,
+		Index:       "2",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       alice,
+		Red:         bob,
+		MoveCount:   0,
+		BeforeIndex: "1",
+		AfterIndex:  types.NoFifoIndex,
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -213,16 +223,18 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 	})
 	systemInfo, found = k.GetSystemInfo(ctx)
 	require.True(t, found)
-	require.EqualValues(t, types.SystemInfo{NextId: 4}, systemInfo)
+	require.EqualValues(t, types.SystemInfo{NextId: 4, FifoHeadIndex: "1", FifoTailIndex: "3"}, systemInfo)
 	storedGame, found = k.GetStoredGame(ctx, "3")
 	require.True(t, found)
 	require.EqualValues(t, types.StoredGame{
-		Index:     "3",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     carol,
-		Red:       alice,
-		MoveCount: 0,
+		Index:       "3",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       carol,
+		Red:         alice,
+		MoveCount:   0,
+		AfterIndex:  types.NoFifoIndex,
+		BeforeIndex: "2",
 	}, storedGame)
 }
 
@@ -247,28 +259,34 @@ func TestCreate3GamesGetAll(t *testing.T) {
 	games := k.GetAllStoredGame(ctx)
 	require.Len(t, games, 3)
 	require.EqualValues(t, types.StoredGame{
-		Index:     "1",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     bob,
-		Red:       carol,
-		MoveCount: 0,
+		Index:       "1",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         carol,
+		MoveCount:   0,
+		BeforeIndex: types.NoFifoIndex,
+		AfterIndex:  "2",
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
-		Index:     "2",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     alice,
-		Red:       bob,
-		MoveCount: 0,
+		Index:       "2",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       alice,
+		Red:         bob,
+		MoveCount:   0,
+		BeforeIndex: "1",
+		AfterIndex:  "3",
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
-		Index:     "3",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     carol,
-		Red:       alice,
-		MoveCount: 0,
+		Index:       "3",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       carol,
+		Red:         alice,
+		MoveCount:   0,
+		BeforeIndex: "2",
+		AfterIndex:  types.NoFifoIndex,
 	}, games[2])
 }
 
@@ -288,16 +306,20 @@ func TestCreateGameFarFuture(t *testing.T) {
 	systemInfo, found := k.GetSystemInfo(ctx)
 	require.True(t, found)
 	require.EqualValues(t, types.SystemInfo{
-		NextId: 1025,
+		NextId:        1025,
+		FifoHeadIndex: "1024",
+		FifoTailIndex: "1024",
 	}, systemInfo)
 	storedGame, found := k.GetStoredGame(ctx, "1024")
 	require.True(t, found)
 	require.EqualValues(t, types.StoredGame{
-		Index:     "1024",
-		Board:     "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
-		Turn:      "b",
-		Black:     bob,
-		Red:       alice,
-		MoveCount: 0,
+		Index:       "1024",
+		Board:       "*b*b*b*b|b*b*b*b*|*b*b*b*b|********|********|r*r*r*r*|*r*r*r*r|r*r*r*r*",
+		Turn:        "b",
+		Black:       bob,
+		Red:         alice,
+		MoveCount:   0,
+		BeforeIndex: types.NoFifoIndex,
+		AfterIndex:  types.NoFifoIndex,
 	}, storedGame)
 }
