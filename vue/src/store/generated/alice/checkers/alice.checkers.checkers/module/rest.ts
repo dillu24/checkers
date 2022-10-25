@@ -56,7 +56,7 @@ export interface CheckersQueryGetSystemInfoResponse {
  * QueryParamsResponse is response type for the Query/Params RPC method.
  */
 export interface CheckersQueryParamsResponse {
-  /** params holds all the parameters of this module. */
+  /** Params defines the parameters for the module. */
   params?: CheckersParams;
 }
 
@@ -69,11 +69,15 @@ export interface CheckersStoredGame {
 
   /** @format uint64 */
   moveCount?: string;
+  beforeIndex?: string;
+  afterIndex?: string;
 }
 
 export interface CheckersSystemInfo {
   /** @format uint64 */
   nextId?: string;
+  fifoHeadIndex?: string;
+  fifoTailIndex?: string;
 }
 
 export interface ProtobufAny {
