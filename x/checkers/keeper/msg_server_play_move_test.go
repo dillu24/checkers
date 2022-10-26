@@ -108,6 +108,7 @@ func TestPlayMoveSavedGame(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, storedGame)
 }
 
@@ -133,6 +134,8 @@ func TestPlayMoveEmitted(t *testing.T) {
 			{Key: types.MovePlayedEventCapturedX, Value: "-1"},
 			{Key: types.MovePlayedEventCapturedY, Value: "-1"},
 			{Key: types.MovePlayedEventWinner, Value: rules.PieceStrings[rules.NO_PLAYER]},
+			{Key: types.MovePlayedEventBoard,
+				Value: "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|********|r*r*r*r*|*r*r*r*r|r*r*r*r*"},
 		},
 	}, events[0])
 }
@@ -266,6 +269,7 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, storedGame)
 }
 
@@ -297,7 +301,9 @@ func TestPlayMove2Emitted(t *testing.T) {
 		{Key: types.MovePlayedEventCapturedX, Value: "-1"},
 		{Key: types.MovePlayedEventCapturedY, Value: "-1"},
 		{Key: types.MovePlayedEventWinner, Value: rules.PieceStrings[rules.NO_PLAYER]},
-	}, events[0].Attributes[5:])
+		{Key: types.MovePlayedEventBoard,
+			Value: "*b*b*b*b|b*b*b*b*|***b*b*b|**b*****|*r******|**r*r*r*|*r*r*r*r|r*r*r*r*"},
+	}, events[0].Attributes[6:])
 }
 
 func TestPlayMove3(t *testing.T) {
@@ -376,6 +382,7 @@ func TestPlayMove3SavedGame(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, storedGame)
 }
 

@@ -66,6 +66,7 @@ func TestCreate1GameHasSaved(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, game)
 }
 
@@ -89,6 +90,7 @@ func TestCreate1GameGetAll(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, games[0])
 }
 
@@ -196,6 +198,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		AfterIndex:  types.NoFifoIndex,
 		BeforeIndex: types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -218,6 +221,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		BeforeIndex: "1",
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -240,6 +244,7 @@ func TestCreate3GamesHasSaved(t *testing.T) {
 		AfterIndex:  types.NoFifoIndex,
 		BeforeIndex: "2",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, storedGame)
 }
 
@@ -273,6 +278,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  "2",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, games[0])
 	require.EqualValues(t, types.StoredGame{
 		Index:       "2",
@@ -284,6 +290,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		BeforeIndex: "1",
 		AfterIndex:  "3",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, games[1])
 	require.EqualValues(t, types.StoredGame{
 		Index:       "3",
@@ -295,6 +302,7 @@ func TestCreate3GamesGetAll(t *testing.T) {
 		BeforeIndex: "2",
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, games[2])
 }
 
@@ -330,6 +338,7 @@ func TestCreateGameFarFuture(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, storedGame)
 }
 

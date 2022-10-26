@@ -38,6 +38,7 @@ func TestRejectFirstGameHasSavedFifo(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, game2)
 }
 
@@ -77,6 +78,7 @@ func TestRejectMiddleGameHasSaved(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  "3",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, game1)
 	game3, found := k.GetStoredGame(ctx, "3")
 	require.True(t, found)
@@ -90,5 +92,6 @@ func TestRejectMiddleGameHasSaved(t *testing.T) {
 		BeforeIndex: "1",
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
+		Winner:      "*",
 	}, game3)
 }
