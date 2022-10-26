@@ -29,6 +29,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		MoveCount:   0,
 		AfterIndex:  types.NoFifoIndex,
 		BeforeIndex: types.NoFifoIndex,
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -50,6 +51,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		MoveCount:   0,
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  "2",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -62,6 +64,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		MoveCount:   0,
 		BeforeIndex: "1",
 		AfterIndex:  types.NoFifoIndex,
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -83,6 +86,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		MoveCount:   0,
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  "2",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -95,6 +99,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		MoveCount:   0,
 		BeforeIndex: "1",
 		AfterIndex:  "3",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "3")
 	require.True(t, found)
@@ -107,5 +112,6 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		MoveCount:   0,
 		AfterIndex:  types.NoFifoIndex,
 		BeforeIndex: "2",
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 }

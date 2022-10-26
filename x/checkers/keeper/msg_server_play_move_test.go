@@ -107,6 +107,7 @@ func TestPlayMoveSavedGame(t *testing.T) {
 		MoveCount:   1,
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 }
 
@@ -264,6 +265,7 @@ func TestPlayMove2SavedGame(t *testing.T) {
 		MoveCount:   2,
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 }
 
@@ -373,5 +375,6 @@ func TestPlayMove3SavedGame(t *testing.T) {
 		MoveCount:   3,
 		BeforeIndex: types.NoFifoIndex,
 		AfterIndex:  types.NoFifoIndex,
+		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 }
