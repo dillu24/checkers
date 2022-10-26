@@ -332,3 +332,17 @@ func TestCreateGameFarFuture(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 	}, storedGame)
 }
+
+func TestSavedDeadlineIsParseable(t *testing.T) {
+	msgServer, k, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: bob,
+		Black:   alice,
+		Red:     carol,
+	})
+	game, found := k.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	_, err := game.GetDeadlineAsTime()
+	require.Nil(t, err)
+}
