@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/alice/checkers/x/checkers/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -30,7 +31,23 @@ func (k *Keeper) CollectWager(ctx sdk.Context, storedGame *types.StoredGame) err
 }
 
 func (k *Keeper) MustPayWinnings(ctx sdk.Context, storedGame *types.StoredGame) {
-
+	winnerAddress, found, err := storedGame.GetWinnerAddress()
+	if err != nil {
+		panic(err.Error())
+	}
+	if !found {
+		panic(fmt.Sprintf(types.ErrCannotFindWinnerByColor.Error(), storedGame.Winner))
+	}
+	winnings := storedGame.GetWagerCoin()
+	if storedGame.MoveCount == 0 {
+		panic(types.ErrNothingToPay.Error())
+	} else if storedGame.MoveCount > 1 {
+		winnings = winnings.Add(winnings)
+	}
+	err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, winnerAddress, sdk.NewCoins(winnings))
+	if err != nil {
+		panic(fmt.Sprintf(types.ErrCannotPayWinnings.Error(), err.Error()))
+	}
 }
 
 func (k *Keeper) MustRefundWager(ctx sdk.Context, storedGame *types.StoredGame) {
