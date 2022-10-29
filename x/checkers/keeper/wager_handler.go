@@ -51,5 +51,17 @@ func (k *Keeper) MustPayWinnings(ctx sdk.Context, storedGame *types.StoredGame) 
 }
 
 func (k *Keeper) MustRefundWager(ctx sdk.Context, storedGame *types.StoredGame) {
-
+	if storedGame.MoveCount == 1 {
+		black, err := storedGame.GetBlackAddress()
+		if err != nil {
+			panic(err.Error())
+		}
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, black, sdk.NewCoins(storedGame.GetWagerCoin()))
+		if err != nil {
+			panic(fmt.Sprintf(types.ErrCannotRefundWager.Error(), err.Error()))
+		}
+	} else if storedGame.MoveCount != 0 {
+		// TODO Implement a draw mechanism
+		panic(fmt.Sprintf(types.ErrNotInRefundState.Error(), storedGame.MoveCount))
+	}
 }
