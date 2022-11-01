@@ -54,3 +54,38 @@ func (suite *IntegrationTestSuite) SetupTest() {
 	suite.ctx = ctx
 	suite.queryClient = queryClient
 }
+
+func makeBalance(address string, balance int64) banktypes.Balance {
+	return banktypes.Balance{
+		Address: address,
+		Coins: sdk.Coins{
+			sdk.Coin{
+				Denom:  sdk.DefaultBondDenom,
+				Amount: sdk.NewInt(balance),
+			},
+		},
+	}
+}
+
+func getBankGenesis() *banktypes.GenesisState {
+	coins := []banktypes.Balance{
+		makeBalance(alice, balAlice),
+		makeBalance(bob, balBob),
+		makeBalance(carol, balCarol),
+	}
+	supply := banktypes.Supply{Total: coins[0].Coins.Add(coins[1].Coins...).Add(coins[2].Coins...)}
+	state := banktypes.NewGenesisState(banktypes.DefaultParams(), coins, supply.Total, []banktypes.Metadata{})
+	return state
+}
+
+func (suite *IntegrationTestSuite) setupSuiteWithBalances() {
+	suite.app.BankKeeper.InitGenesis(suite.ctx, getBankGenesis())
+}
+
+func (suite *IntegrationTestSuite) RequireBankBalance(expected int, atAddress string) {
+	sdkAddr, err := sdk.AccAddressFromBech32(atAddress)
+	suite.Require().Nil(err, "Failed to parse address: %s", atAddress)
+	suite.Require().Equal(
+		int64(expected),
+		suite.app.BankKeeper.GetBalance(suite.ctx, sdkAddr, sdk.DefaultBondDenom).Amount.Int64())
+}
