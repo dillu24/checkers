@@ -8,12 +8,14 @@ import (
 )
 
 func TestRejectFirstGameHasSavedFifo(t *testing.T) {
-	msgServer, k, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, k, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Black:   carol,
 		Red:     alice,
+		Wager:   46,
 	})
 	msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   carol,
@@ -39,21 +41,25 @@ func TestRejectFirstGameHasSavedFifo(t *testing.T) {
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       46,
 	}, game2)
 }
 
 func TestRejectMiddleGameHasSaved(t *testing.T) {
-	msgServer, k, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, k, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Black:   carol,
 		Red:     alice,
+		Wager:   46,
 	})
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Black:   alice,
 		Red:     bob,
+		Wager:   47,
 	})
 	msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   carol,
@@ -79,6 +85,7 @@ func TestRejectMiddleGameHasSaved(t *testing.T) {
 		AfterIndex:  "3",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       45,
 	}, game1)
 	game3, found := k.GetStoredGame(ctx, "3")
 	require.True(t, found)
@@ -93,5 +100,6 @@ func TestRejectMiddleGameHasSaved(t *testing.T) {
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       47,
 	}, game3)
 }

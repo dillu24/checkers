@@ -32,7 +32,8 @@ func setupMsgServerWithOneGameForRejectGame(t testing.TB) (types.MsgServer, keep
 }
 
 func TestRejectGameWrongByCreator(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
+	defer ctrl.Finish()
 	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   alice,
 		GameIndex: "1",
@@ -42,7 +43,8 @@ func TestRejectGameWrongByCreator(t *testing.T) {
 }
 
 func TestRejectGameByBlackNoMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
+	defer ctrl.Finish()
 	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   bob,
 		GameIndex: "1",
@@ -52,8 +54,9 @@ func TestRejectGameByBlackNoMove(t *testing.T) {
 }
 
 func TestRejectGameByBlackNoMoveRemovedGame(t *testing.T) {
-	msgServer, k, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, k, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
 	msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   bob,
 		GameIndex: "1",
@@ -72,8 +75,9 @@ func TestRejectGameByBlackNoMoveRemovedGame(t *testing.T) {
 }
 
 func TestRejectGameByBlackNoMoveEmitted(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
 	msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   bob,
 		GameIndex: "1",
@@ -91,7 +95,8 @@ func TestRejectGameByBlackNoMoveEmitted(t *testing.T) {
 }
 
 func TestRejectGameByRedNoMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
+	defer ctrl.Finish()
 	rejectGameResponse, err := msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   carol,
 		GameIndex: "1",
@@ -101,8 +106,9 @@ func TestRejectGameByRedNoMove(t *testing.T) {
 }
 
 func TestRejectGameByRedNoMoveRemovedGame(t *testing.T) {
-	msgServer, k, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, k, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
 	msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   carol,
 		GameIndex: "1",
@@ -121,8 +127,9 @@ func TestRejectGameByRedNoMoveRemovedGame(t *testing.T) {
 }
 
 func TestRejectGameByRedNoMoveEmitted(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
 	msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   carol,
 		GameIndex: "1",
@@ -140,7 +147,9 @@ func TestRejectGameByRedNoMoveEmitted(t *testing.T) {
 }
 
 func TestRejectGameByRedOneMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -158,8 +167,10 @@ func TestRejectGameByRedOneMove(t *testing.T) {
 }
 
 func TestRejectGameByRedOneMoveRemovedGame(t *testing.T) {
-	msgServer, k, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, k, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -186,8 +197,10 @@ func TestRejectGameByRedOneMoveRemovedGame(t *testing.T) {
 }
 
 func TestRejectGameByRedOneMoveEmitted(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
 	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -212,8 +225,29 @@ func TestRejectGameByRedOneMoveEmitted(t *testing.T) {
 	}, events[0])
 }
 
+func TestRejectGameByRedOneCalledBank(t *testing.T) {
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	escrow.ExpectRefund(context, bob, 45).Times(1).After(payBob)
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.RejectGame(context, &types.MsgRejectGame{
+		Creator:   carol,
+		GameIndex: "1",
+	})
+}
+
 func TestRejectGameByBlackWrongOneMove(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
+	defer ctrl.Finish()
+	escrow.ExpectPay(context, bob, 45).Times(1)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -231,7 +265,10 @@ func TestRejectGameByBlackWrongOneMove(t *testing.T) {
 }
 
 func TestRejectGameByRedWrongTwoMoves(t *testing.T) {
-	msgServer, _, context := setupMsgServerWithOneGameForRejectGame(t)
+	msgServer, _, context, ctrl, escrow := setupMsgServerWithOneGameForRejectGame(t)
+	defer ctrl.Finish()
+	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
+	escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",

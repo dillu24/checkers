@@ -14,6 +14,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Creator: alice,
 		Black:   bob,
 		Red:     carol,
+		Wager:   45,
 	})
 	systemInfo, found := k.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -31,12 +32,14 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		BeforeIndex: types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       45,
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Black:   alice,
 		Red:     bob,
+		Wager:   46,
 	})
 	systemInfo, found = k.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -54,6 +57,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		AfterIndex:  "2",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       45,
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -68,12 +72,14 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		AfterIndex:  types.NoFifoIndex,
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       46,
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
 		Creator: bob,
 		Black:   carol,
 		Red:     alice,
+		Wager:   47,
 	})
 	systemInfo, found = k.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -91,6 +97,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		AfterIndex:  "2",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       45,
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -105,6 +112,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		AfterIndex:  "3",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       46,
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "3")
 	require.True(t, found)
@@ -119,5 +127,6 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		BeforeIndex: "2",
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
+		Wager:       47,
 	}, storedGame)
 }
