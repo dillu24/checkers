@@ -241,9 +241,9 @@ func TestForfeit2OldestPlayedOnceIn1Call(t *testing.T) {
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
 	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
-	payCarol := escrow.ExpectPay(context, carol, 46).Times(1).After(payBob)
-	refundBob := escrow.ExpectRefund(context, bob, 45).Times(1).After(payCarol)
-	escrow.ExpectRefund(context, carol, 46).Times(1).After(refundBob)
+	payAlice := escrow.ExpectPay(context, alice, 46).Times(1).After(payBob)
+	refundBob := escrow.ExpectRefund(context, bob, 45).Times(1).After(payAlice)
+	escrow.ExpectRefund(context, alice, 46).Times(1).After(refundBob)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
@@ -456,12 +456,12 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
 	ctx := sdk.UnwrapSDKContext(context)
 	defer ctrl.Finish()
-	payBob := escrow.ExpectPay(context, bob, 45).Times(1)
-	payCarol1 := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
-	payCarol2 := escrow.ExpectPay(context, carol, 46).Times(1).After(payCarol1)
-	payAlice := escrow.ExpectPay(context, alice, 46).Times(1).After(payCarol2)
-	refundCarol := escrow.ExpectRefund(context, carol, 90).Times(1).After(payAlice)
-	escrow.ExpectRefund(context, alice, 92).Times(1).After(refundCarol)
+	payBob1 := escrow.ExpectPay(context, bob, 45).Times(1)
+	payCarol := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob1)
+	payAlice := escrow.ExpectPay(context, alice, 46).Times(1).After(payCarol)
+	payBob2 := escrow.ExpectPay(context, bob, 46).Times(1).After(payAlice)
+	refundCarol := escrow.ExpectRefund(context, carol, 90).Times(1).After(payBob2)
+	escrow.ExpectRefund(context, bob, 92).Times(1).After(refundCarol)
 	msgServer.PlayMove(context, &types.MsgPlayMove{
 		Creator:   bob,
 		GameIndex: "1",
