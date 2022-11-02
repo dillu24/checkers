@@ -47,7 +47,7 @@ func (k msgServer) RejectGame(goCtx context.Context, msg *types.MsgRejectGame) (
 	if consumed := ctx.GasMeter().GasConsumed(); consumed < refund {
 		refund = consumed
 	}
-	ctx.GasMeter().ConsumeGas(refund, "Reject game")
+	ctx.GasMeter().RefundGas(refund, "Reject game")
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

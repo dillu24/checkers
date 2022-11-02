@@ -94,6 +94,19 @@ func TestRejectGameByBlackNoMoveEmitted(t *testing.T) {
 	}, events[0])
 }
 
+func TestRejectGameByBlackRefundedGas(t *testing.T) {
+	msgServer, _, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	before := ctx.GasMeter().GasConsumed()
+	msgServer.RejectGame(context, &types.MsgRejectGame{
+		Creator:   bob,
+		GameIndex: "1",
+	})
+	after := ctx.GasMeter().GasConsumed()
+	require.LessOrEqual(t, after, before-5000)
+}
+
 func TestRejectGameByRedNoMove(t *testing.T) {
 	msgServer, _, context, ctrl, _ := setupMsgServerWithOneGameForRejectGame(t)
 	defer ctrl.Finish()
