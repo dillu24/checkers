@@ -15,8 +15,8 @@ paths:
             type: object
             properties:
               params:
+                description: params holds all the parameters of this module.
                 type: object
-                description: Params defines the parameters for the module.
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -76,6 +76,9 @@ paths:
                       type: string
                     winner:
                       type: string
+                    wager:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -214,6 +217,9 @@ paths:
                     type: string
                   winner:
                     type: string
+                  wager:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -30759,6 +30765,9 @@ definitions:
               type: string
             winner:
               type: string
+            wager:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -30811,6 +30820,9 @@ definitions:
             type: string
           winner:
             type: string
+          wager:
+            type: string
+            format: uint64
   alice.checkers.checkers.QueryGetSystemInfoResponse:
     type: object
     properties:
@@ -30828,8 +30840,8 @@ definitions:
     type: object
     properties:
       params:
+        description: params holds all the parameters of this module.
         type: object
-        description: Params defines the parameters for the module.
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   alice.checkers.checkers.StoredGame:
     type: object
@@ -30855,6 +30867,9 @@ definitions:
         type: string
       winner:
         type: string
+      wager:
+        type: string
+        format: uint64
   alice.checkers.checkers.SystemInfo:
     type: object
     properties:
