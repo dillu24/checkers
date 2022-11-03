@@ -70,7 +70,7 @@ var (
 				ToY:       3,
 			},
 			response: nil,
-			err:      "2: ame by id not found",
+			err:      "2: game by id not found",
 		},
 		{
 			desc: "Game finished, wrong",
@@ -100,7 +100,7 @@ var (
 				Index:  "1",
 				Board:  "*b*b*b*b|b*b*b*b*|*b*b*b*b|",
 				Turn:   "b",
-				Winner: "b",
+				Winner: "*",
 			},
 			request: &types.QueryCanPlayMoveRequest{
 				GameIndex: "1",
@@ -153,7 +153,7 @@ var (
 			},
 			response: &types.QueryCanPlayMoveResponse{
 				Possible: false,
-				Reason:   "player tried to play out of turn: r",
+				Reason:   "player tried to play out of turn: red",
 			},
 			err: "nil",
 		},
