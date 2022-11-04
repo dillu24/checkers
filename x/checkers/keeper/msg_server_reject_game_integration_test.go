@@ -13,6 +13,7 @@ func (suite *IntegrationTestSuite) setupSuiteWithOneGameForRejectGame() {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 }
 
@@ -122,6 +123,7 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveEvenZero() {
 		Black:   bob,
 		Red:     carol,
 		Wager:   0,
+		Denom:   "stake",
 	})
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator:   bob,
@@ -153,6 +155,7 @@ func (suite *IntegrationTestSuite) TestRejectGameByRedOneMoveEvenZeroEmitted() {
 		Black:   bob,
 		Red:     carol,
 		Wager:   0,
+		Denom:   "stake",
 	})
 	suite.msgServer.PlayMove(goCtx, &types.MsgPlayMove{
 		Creator:   bob,
