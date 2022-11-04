@@ -16,6 +16,7 @@ func TestRejectFirstGameHasSavedFifo(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   carol,
@@ -42,6 +43,7 @@ func TestRejectFirstGameHasSavedFifo(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       46,
+		Denom:       "coin",
 	}, game2)
 }
 
@@ -54,12 +56,14 @@ func TestRejectMiddleGameHasSaved(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	msgServer.CreateGame(context, &types.MsgCreateGame{
 		Creator: carol,
 		Black:   alice,
 		Red:     bob,
 		Wager:   47,
+		Denom:   "gold",
 	})
 	msgServer.RejectGame(context, &types.MsgRejectGame{
 		Creator:   carol,
@@ -86,6 +90,7 @@ func TestRejectMiddleGameHasSaved(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       45,
+		Denom:       "stake",
 	}, game1)
 	game3, found := k.GetStoredGame(ctx, "3")
 	require.True(t, found)
@@ -101,5 +106,6 @@ func TestRejectMiddleGameHasSaved(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       47,
+		Denom:       "gold",
 	}, game3)
 }

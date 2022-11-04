@@ -15,6 +15,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Black:   bob,
 		Red:     carol,
 		Wager:   45,
+		Denom:   "stake",
 	})
 	systemInfo, found := k.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -33,6 +34,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       45,
+		Denom:       "stake",
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -40,6 +42,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Black:   alice,
 		Red:     bob,
 		Wager:   46,
+		Denom:   "coin",
 	})
 	systemInfo, found = k.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -58,6 +61,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       45,
+		Denom:       "stake",
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -73,6 +77,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       46,
+		Denom:       "coin",
 	}, storedGame)
 
 	msgSrvr.CreateGame(context, &types.MsgCreateGame{
@@ -80,6 +85,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Black:   carol,
 		Red:     alice,
 		Wager:   47,
+		Denom:   "gold",
 	})
 	systemInfo, found = k.GetSystemInfo(ctx)
 	require.True(t, found)
@@ -98,6 +104,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       45,
+		Denom:       "stake",
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "2")
 	require.True(t, found)
@@ -113,6 +120,7 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       46,
+		Denom:       "coin",
 	}, storedGame)
 	storedGame, found = k.GetStoredGame(ctx, "3")
 	require.True(t, found)
@@ -128,5 +136,6 @@ func TestCreate3GamesHasSavedFiFo(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "*",
 		Wager:       47,
+		Denom:       "gold",
 	}, storedGame)
 }

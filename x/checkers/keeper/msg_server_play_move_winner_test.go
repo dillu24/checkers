@@ -115,6 +115,7 @@ func TestPlayMoveUpToWinner(t *testing.T) {
 		Deadline:    types.FormatDeadline(ctx.BlockTime().Add(types.MaxTurnDuration)),
 		Winner:      "b",
 		Wager:       45,
+		Denom:       "stake",
 	}, game)
 
 	events := sdk.StringifyEvents(ctx.EventManager().ABCIEvents())
