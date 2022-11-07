@@ -20,10 +20,10 @@ download-cosmos-proto:
 	curl https://raw.githubusercontent.com/cosmos/cosmos-sdk/${cosmos-version}/third_party/proto/gogoproto/gogo.proto -o proto/gogoproto/gogo.proto
 
 gen-protoc-ts:
-	mkdir -p ./client/src/types/generated/
+	mkdir -p ./clientt/src/types/generated/
 	ls proto/checkers | xargs -I {} ./scripts/protoc/bin/protoc \
 		--plugin="./scripts/node_modules/.bin/protoc-gen-ts_proto" \
-		--ts_proto_out="./client/src/types/generated" \
+		--ts_proto_out="./clientt/src/types/generated" \
 		--proto_path="./proto" \
 		--ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=messages" \
 		checkers/{}
