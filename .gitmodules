@@ -1,0 +1,4 @@
+
+[submodule "clientt"]
+	path = clientt
+	url = https://github.com/dillu24/academy-checkers-ui.git
