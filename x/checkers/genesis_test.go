@@ -33,8 +33,14 @@ func TestGenesis(t *testing.T) {
 				Index: "1",
 			},
 		},
-		Leaderboard: &types.Leaderboard{
-			Winners: "85",
+		Leaderboard: types.Leaderboard{
+			Winners: []types.WinningPlayer{
+				{
+					PlayerAddress: "testPlayer",
+					WonCount:      1,
+					DateAdded:     "thisdate",
+				},
+			},
 		},
 		// this line is used by starport scaffolding # genesis/test/state
 	}

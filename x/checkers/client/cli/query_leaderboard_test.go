@@ -21,13 +21,13 @@ func networkWithLeaderboardObjects(t *testing.T) (*network.Network, types.Leader
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
-	leaderboard := &types.Leaderboard{}
+	leaderboard := types.Leaderboard{}
 	nullify.Fill(&leaderboard)
 	state.Leaderboard = leaderboard
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), *state.Leaderboard
+	return network.New(t, cfg), state.Leaderboard
 }
 
 func TestShowLeaderboard(t *testing.T) {
