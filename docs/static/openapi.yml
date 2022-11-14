@@ -81,7 +81,17 @@ paths:
                 type: object
                 properties:
                   winners:
-                    type: string
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        playerAddress:
+                          type: string
+                        wonCount:
+                          type: string
+                          format: uint64
+                        dateAdded:
+                          type: string
         default:
           description: An unexpected error response.
           schema:
@@ -31000,7 +31010,17 @@ definitions:
     type: object
     properties:
       winners:
-        type: string
+        type: array
+        items:
+          type: object
+          properties:
+            playerAddress:
+              type: string
+            wonCount:
+              type: string
+              format: uint64
+            dateAdded:
+              type: string
   alice.checkers.checkers.MsgCreateGameResponse:
     type: object
     properties:
@@ -31153,7 +31173,17 @@ definitions:
         type: object
         properties:
           winners:
-            type: string
+            type: array
+            items:
+              type: object
+              properties:
+                playerAddress:
+                  type: string
+                wonCount:
+                  type: string
+                  format: uint64
+                dateAdded:
+                  type: string
   alice.checkers.checkers.QueryGetPlayerInfoResponse:
     type: object
     properties:
@@ -31261,6 +31291,16 @@ definitions:
       fifoHeadIndex:
         type: string
       fifoTailIndex:
+        type: string
+  alice.checkers.checkers.WinningPlayer:
+    type: object
+    properties:
+      playerAddress:
+        type: string
+      wonCount:
+        type: string
+        format: uint64
+      dateAdded:
         type: string
   cosmos.base.query.v1beta1.PageRequest:
     type: object

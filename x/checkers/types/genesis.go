@@ -17,7 +17,9 @@ func DefaultGenesis() *GenesisState {
 		},
 		StoredGameList: []StoredGame{},
 		PlayerInfoList: []PlayerInfo{},
-		Leaderboard:    nil,
+		Leaderboard: Leaderboard{
+			Winners: []WinningPlayer{},
+		},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -45,6 +47,10 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicated index for playerInfo")
 		}
 		playerInfoIndexMap[index] = struct{}{}
+	}
+	// Validate leaderboard
+	if err := gs.Leaderboard.Validate(); err != nil {
+		return err
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

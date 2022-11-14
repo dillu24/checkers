@@ -41,8 +41,19 @@ func TestGenesisState_Validate(t *testing.T) {
 						Index: "1",
 					},
 				},
-				Leaderboard: &types.Leaderboard{
-					Winners: "26",
+				Leaderboard: types.Leaderboard{
+					Winners: []types.WinningPlayer{
+						{
+							PlayerAddress: "cosmos123",
+							WonCount:      2,
+							DateAdded:     "date",
+						},
+						{
+							PlayerAddress: "cosmos456",
+							WonCount:      3,
+							DateAdded:     "date2",
+						},
+					},
 				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
@@ -76,6 +87,22 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			valid: false,
 		},
+		{
+			desc: "duplicated winnerPlayer",
+			genState: &types.GenesisState{
+				Leaderboard: types.Leaderboard{
+					Winners: []types.WinningPlayer{
+						{
+							PlayerAddress: "0",
+						},
+						{
+							PlayerAddress: "0",
+						},
+					},
+				},
+			},
+			valid: false,
+		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -99,6 +126,9 @@ func TestDefaultGenesisState_ExpectedInitialNextId(t *testing.T) {
 			},
 			StoredGameList: []types.StoredGame{},
 			PlayerInfoList: []types.PlayerInfo{},
+			Leaderboard: types.Leaderboard{
+				Winners: []types.WinningPlayer{},
+			},
 		},
 		types.DefaultGenesis(),
 	)

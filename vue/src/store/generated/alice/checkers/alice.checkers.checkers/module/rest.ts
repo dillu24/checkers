@@ -10,7 +10,7 @@
  */
 
 export interface CheckersLeaderboard {
-  winners?: string;
+  winners?: CheckersWinningPlayer[];
 }
 
 export interface CheckersMsgCreateGameResponse {
@@ -129,6 +129,14 @@ export interface CheckersSystemInfo {
   nextId?: string;
   fifoHeadIndex?: string;
   fifoTailIndex?: string;
+}
+
+export interface CheckersWinningPlayer {
+  playerAddress?: string;
+
+  /** @format uint64 */
+  wonCount?: string;
+  dateAdded?: string;
 }
 
 export interface ProtobufAny {
