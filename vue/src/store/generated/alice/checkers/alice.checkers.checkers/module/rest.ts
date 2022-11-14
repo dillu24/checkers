@@ -9,6 +9,10 @@
  * ---------------------------------------------------------------
  */
 
+export interface CheckersLeaderboard {
+  winners?: string;
+}
+
 export interface CheckersMsgCreateGameResponse {
   gameIndex?: string;
 }
@@ -75,6 +79,10 @@ export interface CheckersQueryAllStoredGameResponse {
 export interface CheckersQueryCanPlayMoveResponse {
   possible?: boolean;
   reason?: string;
+}
+
+export interface CheckersQueryGetLeaderboardResponse {
+  Leaderboard?: CheckersLeaderboard;
 }
 
 export interface CheckersQueryGetPlayerInfoResponse {
@@ -412,6 +420,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   ) =>
     this.request<CheckersQueryCanPlayMoveResponse, RpcStatus>({
       path: `/alice/checkers/checkers/can_play_move/${gameIndex}/${player}/${fromX}/${fromY}/${toX}/${toY}`,
+      method: "GET",
+      format: "json",
+      ...params,
+    });
+
+  /**
+   * No description
+   *
+   * @tags Query
+   * @name QueryLeaderboard
+   * @summary Queries a Leaderboard by index.
+   * @request GET:/alice/checkers/checkers/leaderboard
+   */
+  queryLeaderboard = (params: RequestParams = {}) =>
+    this.request<CheckersQueryGetLeaderboardResponse, RpcStatus>({
+      path: `/alice/checkers/checkers/leaderboard`,
       method: "GET",
       format: "json",
       ...params,
