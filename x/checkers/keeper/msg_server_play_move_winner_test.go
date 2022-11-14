@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"context"
+	goCtx "context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
@@ -71,7 +71,7 @@ func getPlayer(color string) string {
 }
 
 func playAllMoves(
-	t *testing.T, msgServer types.MsgServer, context context.Context, gameIndex string, moves []GameMoveTest) {
+	t *testing.T, msgServer types.MsgServer, context goCtx.Context, gameIndex string, moves []GameMoveTest) {
 	for _, move := range moves {
 		_, err := msgServer.PlayMove(context, &types.MsgPlayMove{
 			Creator:   getPlayer(move.player),
@@ -143,4 +143,69 @@ func TestPlayMoveUpToWinnerCalledBank(t *testing.T) {
 	payCarol := escrow.ExpectPay(context, carol, 45).Times(1).After(payBob)
 	escrow.ExpectRefund(context, bob, 90).Times(1).After(payCarol)
 	playAllMoves(t, msgServer, context, "1", game1Moves)
+}
+
+func TestCompleteGameAddPlayerInfo(t *testing.T) {
+	msgServer, k, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+
+	playAllMoves(t, msgServer, context, "1", game1Moves)
+
+	bobInfo, found := k.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       1,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, bobInfo)
+	carolInfo, found := k.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       0,
+		LostCount:      1,
+		ForfeitedCount: 0,
+	}, carolInfo)
+}
+
+func TestCompleteGameUpdatePlayerInfo(t *testing.T) {
+	msgServer, k, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	})
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	})
+
+	playAllMoves(t, msgServer, context, "1", game1Moves)
+
+	bobInfo, found := k.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       2,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	}, bobInfo)
+	carolInfo, found := k.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       4,
+		LostCount:      6,
+		ForfeitedCount: 6,
+	}, carolInfo)
 }

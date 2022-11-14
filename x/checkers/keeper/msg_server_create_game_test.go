@@ -424,3 +424,93 @@ func TestSavedDeadlineIsParseable(t *testing.T) {
 	_, err := game.GetDeadlineAsTime()
 	require.Nil(t, err)
 }
+
+func TestCreatePlayerInfoNotAdded(t *testing.T) {
+	msgServer, k, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Black:   bob,
+		Red:     carol,
+		Wager:   45,
+		Denom:   "stake",
+	})
+	aliceInfo, found := k.GetPlayerInfo(ctx, alice)
+	require.False(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          "",
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, aliceInfo)
+	bobInfo, found := k.GetPlayerInfo(ctx, bob)
+	require.False(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          "",
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, bobInfo)
+	carolInfo, found := k.GetPlayerInfo(ctx, carol)
+	require.False(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          "",
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, carolInfo)
+}
+
+func TestCreatePlayerInfoNotUpdated(t *testing.T) {
+	msgServer, k, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          alice,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	})
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	})
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       7,
+		LostCount:      8,
+		ForfeitedCount: 9,
+	})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Black:   bob,
+		Red:     carol,
+		Wager:   45,
+		Denom:   "stake",
+	})
+	aliceInfo, found := k.GetPlayerInfo(ctx, alice)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          alice,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	}, aliceInfo)
+	bobInfo, found := k.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	}, bobInfo)
+	carolInfo, found := k.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       7,
+		LostCount:      8,
+		ForfeitedCount: 9,
+	}, carolInfo)
+}

@@ -584,3 +584,130 @@ func TestForfeit2OldestPlayedTwiceIn1Call(t *testing.T) {
 		},
 	}, event)
 }
+
+func TestForfeitGameAddPlayerInfo(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(ctx, game1)
+
+	keeper.ForfeitExpiredGames(context)
+
+	aliceInfo, found := keeper.GetPlayerInfo(ctx, alice)
+	require.False(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          "",
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, aliceInfo)
+	bobInfo, found := keeper.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       0,
+		LostCount:      0,
+		ForfeitedCount: 1,
+	}, bobInfo)
+	carolInfo, found := keeper.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       1,
+		LostCount:      0,
+		ForfeitedCount: 0,
+	}, carolInfo)
+}
+
+func TestForfeitGameUpdatePlayerInfo(t *testing.T) {
+	msgServer, keeper, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          alice,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	})
+	keeper.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       7,
+		LostCount:      8,
+		ForfeitedCount: 9,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   carol,
+		GameIndex: "1",
+		FromX:     0,
+		FromY:     5,
+		ToX:       1,
+		ToY:       4,
+	})
+
+	game1, found := keeper.GetStoredGame(ctx, "1")
+	require.True(t, found)
+	game1.Deadline = types.FormatDeadline(ctx.BlockTime().Add(time.Duration(-1)))
+	keeper.SetStoredGame(ctx, game1)
+	keeper.ForfeitExpiredGames(context)
+
+	aliceInfo, found := keeper.GetPlayerInfo(ctx, alice)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          alice,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	}, aliceInfo)
+	bobInfo, found := keeper.GetPlayerInfo(ctx, bob)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 7,
+	}, bobInfo)
+	carolInfo, found := keeper.GetPlayerInfo(ctx, carol)
+	require.True(t, found)
+	require.EqualValues(t, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       8,
+		LostCount:      8,
+		ForfeitedCount: 9,
+	}, carolInfo)
+}
