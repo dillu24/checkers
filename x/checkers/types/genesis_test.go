@@ -95,6 +95,7 @@ func TestDefaultGenesisState_ExpectedInitialNextId(t *testing.T) {
 				FifoTailIndex: "-1",
 			},
 			StoredGameList: []types.StoredGame{},
+			PlayerInfoList: []types.PlayerInfo{},
 		},
 		types.DefaultGenesis(),
 	)
