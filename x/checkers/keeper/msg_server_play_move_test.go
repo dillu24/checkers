@@ -625,3 +625,93 @@ func TestPlayerInfoNoUpdatedOnNoWinner(t *testing.T) {
 		ForfeitedCount: 9,
 	}, carolInfo)
 }
+
+func TestLeaderboardNoAdditonOnNoWinner(t *testing.T) {
+	msgServer, k, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+	leaderboard, found := k.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.EqualValues(t, len(leaderboard.Winners), 0)
+}
+
+func TestLeaderboardNotUpdatedOnNoWinner(t *testing.T) {
+	msgServer, k, context, ctrl, escrow := setupMsgServerWithOneGameForPlayMove(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	defer ctrl.Finish()
+	escrow.ExpectAny(context)
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          alice,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	})
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	})
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       7,
+		LostCount:      8,
+		ForfeitedCount: 9,
+	})
+	k.SetLeaderboard(ctx, types.Leaderboard{Winners: []types.WinningPlayer{
+		{
+			PlayerAddress: carol,
+			WonCount:      7,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+		{
+			PlayerAddress: bob,
+			WonCount:      4,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+		{
+			PlayerAddress: alice,
+			WonCount:      1,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+	}})
+
+	msgServer.PlayMove(context, &types.MsgPlayMove{
+		Creator:   bob,
+		GameIndex: "1",
+		FromX:     1,
+		FromY:     2,
+		ToX:       2,
+		ToY:       3,
+	})
+
+	leaderboard, found := k.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.EqualValues(t, types.Leaderboard{Winners: []types.WinningPlayer{
+		{
+			PlayerAddress: carol,
+			WonCount:      7,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+		{
+			PlayerAddress: bob,
+			WonCount:      4,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+		{
+			PlayerAddress: alice,
+			WonCount:      1,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+	}}, leaderboard)
+}

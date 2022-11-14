@@ -514,3 +514,84 @@ func TestCreatePlayerInfoNotUpdated(t *testing.T) {
 		ForfeitedCount: 9,
 	}, carolInfo)
 }
+
+func TestCreateLeaderboardNotAdded(t *testing.T) {
+	msgServer, k, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Black:   bob,
+		Red:     carol,
+		Wager:   45,
+		Denom:   "stake",
+	})
+	leaderboard, found := k.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.EqualValues(t, len(leaderboard.Winners), 0)
+}
+
+func TestCreateLeaderboardNotUpdated(t *testing.T) {
+	msgServer, k, context := setupMsgServerCreateGame(t)
+	ctx := sdk.UnwrapSDKContext(context)
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          alice,
+		WonCount:       1,
+		LostCount:      2,
+		ForfeitedCount: 3,
+	})
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          bob,
+		WonCount:       4,
+		LostCount:      5,
+		ForfeitedCount: 6,
+	})
+	k.SetPlayerInfo(ctx, types.PlayerInfo{
+		Index:          carol,
+		WonCount:       7,
+		LostCount:      8,
+		ForfeitedCount: 9,
+	})
+	k.SetLeaderboard(ctx, types.Leaderboard{Winners: []types.WinningPlayer{
+		{
+			PlayerAddress: carol,
+			WonCount:      7,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+		{
+			PlayerAddress: bob,
+			WonCount:      4,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+		{
+			PlayerAddress: alice,
+			WonCount:      1,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+	}})
+	msgServer.CreateGame(context, &types.MsgCreateGame{
+		Creator: alice,
+		Black:   bob,
+		Red:     carol,
+		Wager:   45,
+		Denom:   "stake",
+	})
+	leaderboard, found := k.GetLeaderboard(ctx)
+	require.True(t, found)
+	require.EqualValues(t, types.Leaderboard{Winners: []types.WinningPlayer{
+		{
+			PlayerAddress: carol,
+			WonCount:      7,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+		{
+			PlayerAddress: bob,
+			WonCount:      4,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+		{
+			PlayerAddress: alice,
+			WonCount:      1,
+			DateAdded:     "2006-01-02 15:05:06.999999999 +0000 UTC",
+		},
+	}}, leaderboard)
+}
