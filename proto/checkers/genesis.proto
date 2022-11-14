@@ -17,6 +17,6 @@ message GenesisState {
   SystemInfo systemInfo = 2 [(gogoproto.nullable) = false];
   repeated StoredGame storedGameList = 3 [(gogoproto.nullable) = false];
   repeated PlayerInfo playerInfoList = 4 [(gogoproto.nullable) = false];
-  Leaderboard leaderboard = 5;
+  Leaderboard leaderboard = 5 [(gogoproto.nullable) = false];
   // this line is used by starport scaffolding # genesis/proto/state
 }
