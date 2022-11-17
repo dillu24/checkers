@@ -3,4 +3,5 @@ vue/dist
 release/
 .idea/
 .vscode/
+build/
 .DS_Store
